@@ -1,0 +1,20 @@
+# Ignore sensitive files
+config/.env
+
+# Ignore log files and database
+logs/
+*.log
+*.db
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore page source dumps generated during debugging
+src/page_source.html
+src/dropdown_failure_*.html
+src/data_science_failure_*.html
