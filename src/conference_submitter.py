@@ -305,6 +305,14 @@ class ConferenceSubmitter:
                         (By.XPATH, ".//a[contains(text(), 'data science')]"),
                         (By.XPATH, ".//a[contains(text(), 'Data')]"),
                         (By.XPATH, ".//a[contains(text(), 'data')]"),
+                        (By.XPATH, ".//a[contains(text(), 'Artificial Intelligence')]"),
+                        (By.XPATH, ".//a[contains(text(), 'atificial ielligence')]"),
+                        (By.XPATH, ".//a[contains(text(), 'AI]"),
+                        (By.XPATH, ".//a[contains(text(), 'Machine Learning')]"),
+                        (By.XPATH, ".//a[contains(text(), 'Machine learning')]"),
+                        (By.XPATH, ".//a[contains(text(), 'machine learning')]"),
+                        (By.XPATH, ".//a[contains(text(), 'ML')]"),
+                        (By.XPATH, ".//a[contains(text(), 'ml')]")
                     ]
                     data_science_option = None
                     for by, value in category_selectors:
