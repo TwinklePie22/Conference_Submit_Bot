@@ -17,4 +17,4 @@ __pycache__/
 # Ignore page source dumps generated during debugging
 src/page_source.html
 src/dropdown_failure_*.html
-src/data_science_failure_*.html
+src/data_science_failure_*.htmlconfig/.env
