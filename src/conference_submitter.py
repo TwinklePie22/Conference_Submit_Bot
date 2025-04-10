@@ -291,7 +291,7 @@ class ConferenceSubmitter:
                     #     f.write(self.driver.page_source)
                     # self.logger.debug(f"Page source saved for {url}")
 
-                # Select "Data Science" from the menu
+                # Select category from the menu
                 if dropdown_menu:
                     # Log all dropdown items for debugging
                     items = dropdown_menu.find_elements(By.XPATH, ".//a")
@@ -309,7 +309,7 @@ class ConferenceSubmitter:
                         (By.XPATH, ".//a[contains(text(), 'Image')]"),
                         (By.XPATH, ".//a[contains(text(), 'image')]"),
                         (By.XPATH, ".//a[contains(text(), 'Artificial Intelligence')]"),
-                        (By.XPATH, ".//a[contains(text(), 'atificial ielligence')]"),
+                        (By.XPATH, ".//a[contains(text(), 'artificial intelligence')]"),
                         (By.XPATH, ".//a[contains(text(), 'AI]"),
                         (By.XPATH, ".//a[contains(text(), 'Machine Learning')]"),
                         (By.XPATH, ".//a[contains(text(), 'Machine learning')]"),
@@ -403,39 +403,46 @@ class ConferenceSubmitter:
                 fill_title(self)
                 fill_abstract(self)
 
+                # Scroll down to make "Upload from Computer" and "Submit" buttons visible
+                self.logger.debug("Scrolling down to make upload and submit buttons visible")
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
                 # Handle Checkboxes
                 self.logger.debug("Checking for checkboxes on the form")
                 checkbox_selectors = [
-                    (By.XPATH, "//input[@type='checkbox']"),  # Generic checkbox selector
-                    (By.XPATH, "//input[contains(@id, 'agree') or contains(@name, 'agree')]"),  # Agreement checkboxes
-                    (By.XPATH, "//input[contains(@id, 'terms') or contains(@name, 'terms')]"),  # Terms of service
-                    (By.XPATH, "//input[contains(@id, 'confirm') or contains(@name, 'confirm')]")  # Confirmation checkboxes
+                    (By.XPATH, "//input[@type='checkbox']")
                 ]
                 checkboxes_found = False
                 for by, value in checkbox_selectors:
                     try:
-                        checkboxes = self.driver.find_elements(by, value)
-                        if checkboxes:
-                            for checkbox in checkboxes:
-                                if checkbox.is_displayed() and not checkbox.is_selected():
-                                    self.driver.execute_script("arguments[0].scrollIntoView(true);", checkbox)
-                                    checkbox.click()
-                                    self.logger.debug(f"Checked checkbox with {by}: {value}")
-                                elif checkbox.is_selected():
-                                    self.logger.debug(f"Checkbox with {by}: {value} already checked")
+                        checkboxes = WebDriverWait(self.driver, 5).until(
+                            EC.presence_of_all_elements_located((by, value))
+                        )
+                        for checkbox in checkboxes:
+                            try:
+                                if checkbox.is_displayed() and checkbox.is_enabled():
+                                    if not checkbox.is_selected():
+                                        self.driver.execute_script("arguments[0].scrollIntoView(true);", checkbox)
+                                        checkbox.click()
+                                        self.logger.info(f"Checked checkbox with {by}: {value}")
+                                    else:
+                                        self.logger.debug(f"Checkbox with {by}: {value} already checked")
+                                    checkboxes_found = True
                                 else:
-                                    self.logger.debug(f"Checkbox with {by}: {value} found but not displayed")
-                            checkboxes_found = True
-                    except NoSuchElementException:
+                                    self.logger.debug(f"Checkbox with {by}: {value} found but not displayed or enabled")
+                            except ElementClickInterceptedException:
+                                self.logger.warning(f"Could not click checkbox with {by}: {value} (click intercepted)")
+                                # Optionally retry with JavaScript click
+                                self.driver.execute_script("arguments[0].click();", checkbox)
+                                self.logger.info(f"Checked checkbox with {by}: {value} using JavaScript")
+                                checkboxes_found = True
+                    except TimeoutException:
                         self.logger.debug(f"No checkboxes found with {by}: {value}")
                         continue
                 if not checkboxes_found:
-                    self.logger.debug("No checkboxes detected on the form")
+                    self.logger.info("No checkboxes detected on this form, proceeding with submission")
 
-                # Scroll down to make "Upload from Computer" and "Submit" buttons visible
-                self.logger.debug("Scrolling down to make upload and submit buttons visible")
-                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(1)  # Brief pause to allow page to settle after scrolling
+                time.sleep(2)  # Brief pause to allow page to settle after scrolling
 
                 # Wait for "Upload from Computer" button to be visible
                 WebDriverWait(self.driver, 10).until(

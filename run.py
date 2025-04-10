@@ -12,7 +12,7 @@ def main():
         raise ValueError("CMT3_USERNAME and CMT3_PASSWORD must be set in config/.env")
 
     # Initialize and run the submitter
-    submitter = ConferenceSubmitter(username, password, max_retries=2)
+    submitter = ConferenceSubmitter(username, password, max_retries=1)
     submitter.run()
 
 if __name__ == "__main__":
