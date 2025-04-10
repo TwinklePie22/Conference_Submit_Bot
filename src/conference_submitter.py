@@ -312,26 +312,29 @@ class ConferenceSubmitter:
                         (By.XPATH, ".//a[contains(text(), 'Machine learning')]"),
                         (By.XPATH, ".//a[contains(text(), 'machine learning')]"),
                         (By.XPATH, ".//a[contains(text(), 'ML')]"),
-                        (By.XPATH, ".//a[contains(text(), 'ml')]")
+                        (By.XPATH, ".//a[contains(text(), 'ml')]"),
+                        (By.XPATH, "..//a[contains(text(), 'Smart Computing')]")
                     ]
                     data_science_option = None
+                    selected = None
                     for by, value in category_selectors:
                         try:
                             data_science_option = WebDriverWait(dropdown_menu, 5).until(
                                 EC.element_to_be_clickable((by, value))
                             )
-                            self.logger.debug(f"Found 'Data Science' option with {by}: {value}")
+                            self.logger.debug(f"Found suitable option with {by}: {value}")
+                            selected = value
                             break
                         except TimeoutException:
-                            self.logger.debug(f"'Data Science' option not found with {by}: {value}")
+                            self.logger.debug(f"Suitable option not found with {by}: {value}")
                             continue
 
                     if data_science_option:
                         self.driver.execute_script("arguments[0].scrollIntoView(true);", data_science_option)
                         data_science_option.click()
-                        self.logger.info("Selected 'Data Science' category")
+                        self.logger.info(f"Selected {selected} category")
                     else:
-                        self.logger.warning("'Data Science' option not found in menu, proceeding to form")
+                        self.logger.warning("Suitable option not found in menu, proceeding to form")
                         # with open(os.path.join(self.script_dir, f'data_science_failure_{url.split("/")[-3]}.html'), 'w', encoding='utf-8') as f:
                         #     f.write(self.driver.page_source)
                         # self.logger.debug(f"Page source saved for {url}")
