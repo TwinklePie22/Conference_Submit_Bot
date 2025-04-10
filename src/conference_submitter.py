@@ -304,6 +304,10 @@ class ConferenceSubmitter:
                         (By.XPATH, ".//a[contains(text(), 'data science')]"),
                         (By.XPATH, ".//a[contains(text(), 'Data')]"),
                         (By.XPATH, ".//a[contains(text(), 'data')]"),
+                        (By.XPATH, ".//a[contains(text(), 'Image Processing')]"),
+                        (By.XPATH, ".//a[contains(text(), 'image processing')]"),
+                        (By.XPATH, ".//a[contains(text(), 'Image')]"),
+                        (By.XPATH, ".//a[contains(text(), 'image')]"),
                         (By.XPATH, ".//a[contains(text(), 'Artificial Intelligence')]"),
                         (By.XPATH, ".//a[contains(text(), 'atificial ielligence')]"),
                         (By.XPATH, ".//a[contains(text(), 'AI]"),
@@ -398,6 +402,35 @@ class ConferenceSubmitter:
 
                 fill_title(self)
                 fill_abstract(self)
+
+                # Handle Checkboxes
+                self.logger.debug("Checking for checkboxes on the form")
+                checkbox_selectors = [
+                    (By.XPATH, "//input[@type='checkbox']"),  # Generic checkbox selector
+                    (By.XPATH, "//input[contains(@id, 'agree') or contains(@name, 'agree')]"),  # Agreement checkboxes
+                    (By.XPATH, "//input[contains(@id, 'terms') or contains(@name, 'terms')]"),  # Terms of service
+                    (By.XPATH, "//input[contains(@id, 'confirm') or contains(@name, 'confirm')]")  # Confirmation checkboxes
+                ]
+                checkboxes_found = False
+                for by, value in checkbox_selectors:
+                    try:
+                        checkboxes = self.driver.find_elements(by, value)
+                        if checkboxes:
+                            for checkbox in checkboxes:
+                                if checkbox.is_displayed() and not checkbox.is_selected():
+                                    self.driver.execute_script("arguments[0].scrollIntoView(true);", checkbox)
+                                    checkbox.click()
+                                    self.logger.debug(f"Checked checkbox with {by}: {value}")
+                                elif checkbox.is_selected():
+                                    self.logger.debug(f"Checkbox with {by}: {value} already checked")
+                                else:
+                                    self.logger.debug(f"Checkbox with {by}: {value} found but not displayed")
+                            checkboxes_found = True
+                    except NoSuchElementException:
+                        self.logger.debug(f"No checkboxes found with {by}: {value}")
+                        continue
+                if not checkboxes_found:
+                    self.logger.debug("No checkboxes detected on the form")
 
                 # Scroll down to make "Upload from Computer" and "Submit" buttons visible
                 self.logger.debug("Scrolling down to make upload and submit buttons visible")
