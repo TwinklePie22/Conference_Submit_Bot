@@ -1,7 +1,7 @@
 # Use an official Python runtime as the base image
-FROM python:3.11-slim          
+FROM python:3.11-slim
 
-# Install system dependencies required for Chrome, ChromeDriver, and other tools
+# Install system dependencies required for Chrome, ChromeDriver, pyautogui, and other tools
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     libxi6 \
     libegl1 \
+    libx11-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
@@ -43,6 +44,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Set environment variables to prevent Python from writing .pyc files and to ensure unbuffered output
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+
+# Set DISPLAY environment variable
+ENV DISPLAY=:99
 
 # Run the script
 CMD ["python", "run.py"]
