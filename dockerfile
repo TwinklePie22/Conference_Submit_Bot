@@ -1,7 +1,7 @@
 # Use an official Python runtime as the base image
 FROM python:3.11-slim
 
-# Install system dependencies required for Chrome, ChromeDriver, pyautogui, and other tools
+# Install system dependencies required for Chrome, ChromeDriver, pyautogui, and Xvfb
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libxi6 \
     libegl1 \
     libx11-dev \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
@@ -45,8 +46,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set DISPLAY environment variable
+# Set DISPLAY environment variable for Xvfb
 ENV DISPLAY=:99
 
-# Run the script
-CMD ["python", "run.py"]
+# Run the script with xvfb-run to provide a virtual display
+CMD ["xvfb-run", "--auto-servernum", "--server-args=-screen 0 1920x1080x24", "python", "run.py"]
