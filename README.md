@@ -103,8 +103,8 @@ https://cmt3.research.microsoft.com/ICWITE2025/Submission/Index
 4. ▶️**Pull the Existing Docker Image and Run it**
 
 ```bash
-docker pull your-dockerhub-username/conference-submission-bot:latest
-docker run --rm -it your-dockerhub-username/conference-submission-bot:latest
+docker pull twinklepie/conference_submit_bot
+docker run --rm -it twinklepie/conference_submit_bot
 ```
  OR 
 
