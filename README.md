@@ -57,7 +57,7 @@ Docker allows you to run this project without installing Python, Chrome, or any 
 2. **Clone the Repository**
    ```bash
    git clone https://github.com/TwinklePie22/Conference_Submit_Bot.git
-   cd conference_submission_bot
+   cd Conference_submission_bot
    ```
 
 3. **Configure the Project**
@@ -132,7 +132,7 @@ docker run --rm -it -v $(pwd)/logs:/app/logs conference-submission-bot
 3. **Clone the Repository**:
     ```bash
     git clone https://github.com/TwinklePie22/Conference_Submit_Bot.git
-    cd conference_submission_bot
+    cd Conference_submission_bot
     ```
 4. **Install Dependencies**:
    ```bash
