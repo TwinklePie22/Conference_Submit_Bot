@@ -1,5 +1,5 @@
 # Replace with the latest versions
 selenium==4.25.0
-pyautogui==0.9.55   
+pyautogui==0.9.54 
 python-dotenv==1.0.1
 mouseinfo==0.1.3    
