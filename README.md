@@ -100,7 +100,15 @@ https://cmt3.research.microsoft.com/ICCTDC2025/Submission/Index
 https://cmt3.research.microsoft.com/ICWITE2025/Submission/Index
 ```
 
-4. ▶️**Build and Run the Docker Container**
+4. ▶️**Pull the Existing Docker Image and Run it**
+
+```bash
+docker pull your-dockerhub-username/conference-submission-bot:latest
+docker run --rm -it your-dockerhub-username/conference-submission-bot:latest
+```
+ OR 
+
+**Build and Run the Docker Container**
 
 Build the Docker Image
 ```bash
