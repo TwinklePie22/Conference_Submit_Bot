@@ -50,6 +50,7 @@ class ConferenceSubmitter:
         try:
             with open(submission_info_path, 'r') as f:
                 submission_info = json.load(f)
+
             self.title = submission_info['title']
             self.abstract = submission_info['abstract']
             self.pdf_path = submission_info['pdf_path']  # Load pdf_path from JSON
@@ -105,6 +106,14 @@ class ConferenceSubmitter:
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+            self.cursor.execute('''
+                CREATE TABLE IF NOT EXISTS inactive_links (
+                    link TEXT PRIMARY_KEY,
+                    error_type TEXT,
+                    error_message TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
             self.conn.commit()
             self.logger.debug(f"Database setup complete at {db_file}")
         except sqlite3.Error as e:
@@ -156,6 +165,17 @@ class ConferenceSubmitter:
             self.logger.debug(f"Logged successful link: {url}")
         except sqlite3.Error as e:
             self.logger.error(f"Failed to log successful link {url}: {str(e)}")
+
+    def log_inactive_link(self, url, error_type, error_message):
+        try:
+            self.cursor.execute(
+                'INSERT OR IGNORE INTO inactive_links (link, error_type, error_message) VALUES (?, ?, ?)',
+                (url, error_type, error_message)
+            )
+            self.conn.commit()
+            self.logger.info(f"Logged inactive link - URL: {url}, Type: {error_type}, Message: {error_message}")
+        except sqlite3.Error as e:
+            self.logger.error(f"Failed to log inactive link {url}: {str(e)}")
 
     def login_to_cmt3(self):
         login_url = "https://cmt3.research.microsoft.com/User/Login?ReturnUrl=%2FConference%2FRecent"
@@ -263,7 +283,12 @@ class ConferenceSubmitter:
                         continue
                 if not new_submission_btn:
                     self.logger.error("'Create new submission' button not found with any selector")
+                    error_type = "NoCreateSubmissionButton"
+                    error_msg = "'Create new submission' button not found with any selector"
+                    self.logger.info(f"Inactive submission page detected: {error_msg}")
+                    self.log_inactive_link(url, error_type, error_msg)
                     raise NoSuchElementException("'Create new submission' button not found")
+                    return False                                                
 
                 new_submission_btn.click()
                 self.logger.debug("Clicked '+Create new submission'")
